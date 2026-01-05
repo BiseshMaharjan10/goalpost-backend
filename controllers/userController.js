@@ -1,6 +1,7 @@
 const RegisterUser = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const jwt= require("jsonwebtoken")
 
 const sendEmail = require("../helpers/sendEmail");
 
@@ -64,12 +65,55 @@ const registerUser = async(req, res) =>{
     })
 }catch(error){
     return res.status(404).json({
-        errror: "user not registered ",
+        error: "user not registered ",
         error: error.message
     });
 
 }
 }
 
+const loginUser = async(req,res) =>{
+    try{
+        const {email,password} = req.body
+        const user = await RegisterUser.findOne({where:{email}})
+        if(!user){
+            return res.status(404).json({
+                message: "User not found"
+            })
+        }
+        const isvalidUser = await bcrypt.compare(password,user.password)
+        if(!isvalidUser){
+            return res.status(400).json({
+                message:"Invalid email or password"
+            })
+        }
 
-module.exports = {registerUser};
+        const token = jwt.sign(
+            {
+                id: user.id, 
+                role: user.role
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: process.env.JWT_EXPIRES_ID
+            }
+        )
+
+        return res.status(200).json({
+            success: true,
+            message:"Login sccessful", token
+        })
+
+
+    }catch(error){
+        res.status(500).json({
+            message:"Error logging user",
+            error: error.message
+        })
+    }
+} 
+
+module.exports = {
+    registerUser,
+    loginUser
+};
