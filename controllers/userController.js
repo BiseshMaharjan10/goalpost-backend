@@ -23,8 +23,6 @@ const registerUser = async(req, res) =>{
         
     }
 
-
-
     //genereate verificTION TOKEN
     const verificationToken =  crypto.randomBytes(32).toString("hex")
 
@@ -57,6 +55,7 @@ const registerUser = async(req, res) =>{
 
 
     return res.status(201).json({
+        success: true,
         message: " register successfully",
         user:{
             username: createUser.username,

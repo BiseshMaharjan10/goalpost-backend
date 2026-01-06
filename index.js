@@ -1,6 +1,12 @@
 const express = require("express");
+const {connect} = require("./routes/userRoute");
 const app = express();
 const { sequelize, connectDB } = require("./database/database")
+const cors = require("cors")
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
 
 //middleware
 app.use(express.json());
