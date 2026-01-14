@@ -4,6 +4,7 @@ const verifyEmail = async(req, res) =>{
 
     try{
         const { token } = req.query;
+        console.log("Received token:", token);
 
         if(!token){
             return res.status(400).json({

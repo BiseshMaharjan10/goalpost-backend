@@ -20,9 +20,8 @@ const registerUser = async(req, res) =>{
         return res.status(400).json({
             message: `${username} already exists`
         })
-        
     }
-
+    
     //genereate verificTION TOKEN
     const verificationToken =  crypto.randomBytes(32).toString("hex")
 
@@ -31,7 +30,7 @@ const registerUser = async(req, res) =>{
 
     
     // hashing password
-    const hashedPassword = bcrypt.hashSync(password, 10)
+    const hashedPassword = await bcrypt.hash(password, 10);
 
 
     //passing data to model
@@ -64,6 +63,7 @@ const registerUser = async(req, res) =>{
     })
 }catch(error){
     return res.status(404).json({
+        success: false,
         error: "user not registered ",
         error: error.message
     });
@@ -94,7 +94,7 @@ const loginUser = async(req,res) =>{
             },
             process.env.JWT_SECRET,
             {
-                expiresIn: process.env.JWT_EXPIRES_ID
+                expiresIn: process.env.JWT_EXPIRES_IN
             }
         )
 
@@ -112,7 +112,8 @@ const loginUser = async(req,res) =>{
     }
 } 
 
+
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
 };

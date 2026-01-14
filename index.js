@@ -11,10 +11,9 @@ app.use(cors({
 //middleware
 app.use(express.json());
 
-
 //userRoutes and productRoutes
 app.use("/api/user", require('./routes/userRoute'));
-
+app.use("/api/booking", require('./routes/bookingRoute'));
 
 app.get("/",(req,res) =>{
     res.json({message: "Welcome to the Home Page"});
@@ -24,7 +23,7 @@ app.get("/",(req,res) =>{
 const startServer = async () => {
     const PORT = process.env.PORT || 3000;
     await connectDB();
-    await sequelize.sync({force: true});
+    await sequelize.sync({alter: true});
     app.listen(PORT, () => {
         console.log(`Server is running on http://localhost:${PORT}`);
     });
