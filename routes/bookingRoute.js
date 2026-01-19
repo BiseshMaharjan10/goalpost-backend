@@ -11,7 +11,8 @@ const {
     updateBookingsStatus,
     deleteBooking,
     getMyBookings,
-    createBooking
+    createBooking,
+    createBookingAsAdmin
 } = require('../controllers/bookingController');
 
 // ==================== USER ROUTES ====================
@@ -27,5 +28,6 @@ router.get('/admin/calendar', authGuard, isAdmin, getCalenderBookings);
 router.get('/admin/dashboard-stats', authGuard, isAdmin, getDashboardStats);
 router.patch('/admin/:id/status', authGuard, isAdmin, updateBookingsStatus);
 router.delete('/admin/:id', authGuard, isAdmin, deleteBooking);
+router.post("/admin/create", authGuard, isAdmin, createBookingAsAdmin);
 
 module.exports = router;

@@ -5,7 +5,6 @@ const Activity = require("../models/activityModel");
 
 // ==================== ADMIN FUNCTIONS ====================
 
-
 // Get All Bookings
 const getAllBookings = async (req , res) => {
     try{
@@ -193,6 +192,83 @@ const deleteBooking = async (req, res) => {
     }
 };
 
+// Admin creates booking (walk-in or phone request)
+const createBookingAsAdmin = async (req, res) => {
+    try {
+        const {
+            customerName,
+            email,
+            phoneNumber,
+            bookingDate,
+            timeSlot,
+            notes,
+            isWalkIn,
+            status
+        } = req.body;
+
+        const normalizedStatus = status?.toLowerCase();
+
+        if (!['pending', 'approved','rejected'].includes(normalizedStatus)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid status value'
+        });
+        }
+
+
+        if (!customerName || !email || !bookingDate || !timeSlot) {
+            return res.status(400).json({
+                success: false,
+                message: "Please provide all required fields"
+            });
+        }
+
+        const existingBooking = await Booking.findOne({
+            where: {
+                bookingDate,
+                timeSlot,
+                status: ['pending', 'approved']
+            }
+        });
+
+        if (existingBooking) {
+            return res.status(400).json({
+                success: false,
+                message: "This time slot is already booked"
+            });
+        }
+
+        const booking = await Booking.create({
+            userId: req.user.id,       // admin who created it
+            customerName,
+            email,
+            phoneNumber,
+            bookingDate,
+            timeSlot,
+            notes: notes || '',
+            isWalkIn: Boolean(isWalkIn),
+            status: normalizedStatus         
+        });
+
+        await Activity.create({
+            action: `Admin created booking for ${customerName}`,
+            bookingId: booking.id
+        });
+
+        return res.status(201).json({
+            success: true,
+            message: "Booking created successfully",
+            data: booking
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message   // don’t hide real errors
+        });
+    }
+};
+
 // ==================== User Functions ====================
 const getMyBookings = async (req, res) => {
     try {
@@ -290,6 +366,7 @@ module.exports = {
     updateBookingsStatus,
     deleteBooking,
     getMyBookings,
-    createBooking
+    createBooking,
+    createBookingAsAdmin
 };
 
