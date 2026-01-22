@@ -10,6 +10,7 @@ app.use(cors({
 
 //middleware
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 
 //userRoutes and productRoutes
 app.use("/api/user", require('./routes/userRoute'));

@@ -37,6 +37,10 @@ const Register = sequelize.define(
             type: DataTypes.BOOLEAN,
             defaultValue:false
         },
+        profile:{
+            type:DataTypes.STRING, // single image
+            allowNull:true,
+        },
 
         verificationToken: {
             type:DataTypes.STRING,
